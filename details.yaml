@@ -1,0 +1,126 @@
+project_details:
+  global_rules:
+    - "Toda la lógica de acceso a datos debe filtrar por user_id. Un usuario solo ve y modifica sus propios datos."
+    - "Implementar borrado lógico (soft delete) en BD. No usar DELETE físico."
+    - "El manejo de contraseñas debe usar hashing fuerte (bcrypt)."
+    - "Si requieres información de la DB puedes revisar la carpeta finance-project-db y el archivo schema.sql."
+
+  phase_2_backend:
+    BACK-01:
+      description: "Setup de FastAPI con estructura modular (routers, schemas, models, core, db, services)."
+      acceptance_criteria:
+        - "CORS configurado restrictivamente."
+        - "Conexión a BD PostgreSQL mediante SQLAlchemy o SQLModel configurada."
+        
+    BACK-02:
+      description: "Creación de toda la suite de pruebas unitarias y de integración (pytest) ANTES de implementar la lógica. Estas pruebas servirán como validación continua."
+      acceptance_criteria:
+        - "Tests de Auth: Verificar generación de token en login exitoso, fallo con credenciales erróneas y denegación de acceso sin token."
+        - "Tests de Usuarios: Verificar registro, lectura del perfil propio, actualización y borrado lógico."
+        - "Tests de Categorías: Verificar creación (nombre y presupuesto), lectura, actualización y borrado lógico. Verificar que un usuario no lea categorías de otro."
+        - "Tests de Transacciones: Verificar creación, edición y borrado lógico. Verificar filtros (tipo, categoría, fechas)."
+        - "Tests Lógicos: Verificar que el cálculo de balance (ingresos - egresos) es exacto."
+        - "Tests de Alertas: Verificar que crear un egreso que supere el 80% o 100% del presupuesto de su categoría retorne la alerta correspondiente."
+
+    BACK-03:
+      description: "Implementación del servicio de autenticación y seguridad."
+      acceptance_criteria:
+        - "Endpoint POST /auth/login: Recibe credenciales y retorna access_token (JWT) y token_type."
+        - "Implementar función/middleware para verificar y decodificar el JWT en las rutas protegidas, extrayendo el user_id."
+        - "Las contraseñas deben cifrarse con bcrypt antes de guardarse."
+
+    BACK-04:
+      description: "Endpoints CRUD para la gestión de la cuenta del usuario."
+      acceptance_criteria:
+        - "POST /users/signup: Creación de nuevo usuario."
+        - "GET /users/me: Retorna los datos del usuario autenticado (excluyendo el hash de la contraseña)."
+        - "PUT /users/me: Permite actualizar nombre."
+        - "DELETE /users/me: Realiza un borrado lógico de la cuenta."
+
+    BACK-05:
+      description: "Endpoints CRUD para la gestión de categorías."
+      acceptance_criteria:
+        - "POST /categories: Crea categoría (nombre, monthly_budget)."
+        - "GET /categories: Retorna lista de categorías del usuario."
+        - "GET /categories/{id}: Retorna detalles de una categoría, incluyendo dinámicamente 'gastado' (suma de egresos del mes actual) y 'porcentaje de uso'."
+        - "PUT /categories/{id}: Actualiza nombre o presupuesto."
+        - "DELETE /categories/{id}: Borrado lógico de la categoría."
+
+    BACK-06:
+      description: "Endpoints CRUD para movimientos financieros con soporte de filtros."
+      acceptance_criteria:
+        - "POST /transactions: Crea transacción (tipo, valor, descripción, fecha, category_id). Si el tipo es 'egreso', debe llamar al servicio de validación de presupuesto."
+        - "GET /transactions: Lista transacciones paginadas. DEBE aceptar query params opcionales para filtrar por: 'type' (ingreso/egreso), 'category_id', 'start_date' y 'end_date'."
+        - "GET /transactions/{id}: Retorna detalle de una transacción."
+        - "PUT /transactions/{id}: Actualiza los campos permitidos."
+        - "DELETE /transactions/{id}: Borrado lógico de la transacción."
+
+    BACK-07:
+      description: "Servicios adicionales de cálculo y validación de negocio."
+      acceptance_criteria:
+        - "GET /transactions/balance: Endpoint que calcula y retorna el balance actual exacto (SUM(ingresos) - SUM(egresos)) de todas las transacciones activas del usuario."
+        - "Lógica de Alerta de Presupuesto: Durante la ejecución de POST /transactions, si la transacción es un egreso, el sistema debe calcular el total gastado en esa categoría para el mes en curso. Si el nuevo total supera el 80% o el 100% del monthly_budget, la respuesta HTTP (status 201) debe incluir un campo meta/alerta notificando el estado (ej. 'budget_alert': '80_percent_exceeded')."
+
+  phase_3_frontend:
+    FRONT-01:
+      description: "Setup de Next.js (App Router preferiblemente) con Tailwind CSS o similar."
+      acceptance_criteria:
+        - "Estructura de carpetas limpia y manejo de variables de entorno para API_URL."
+    FRONT-02:
+      description: "Flujo de autenticación visual y protección."
+      acceptance_criteria:
+        - "Páginas de Login y Signup funcionales."
+        - "Manejo seguro de sesión (guardar JWT adecuadamente)."
+        - "Middleware o HOC que redirija al login si no hay sesión activa."
+    FRONT-03:
+      description: "Barra de navegación principal."
+      acceptance_criteria:
+        - "Centro: Botones 'Transacciones' y 'Categorías'."
+        - "Derecha: Icono de perfil de usuario (con opción de logout)."
+    FRONT-04:
+      description: "Vista de listado de categorías."
+      acceptance_criteria:
+        - "Muestra tarjetas o tabla con: Nombre, Presupuesto Total, Gastado, Porcentaje de Uso."
+        - "Indicador visual (ej. barra de progreso) para el presupuesto."
+    FRONT-05:
+      description: "Modal/Formulario para gestionar categorías."
+      acceptance_criteria:
+        - "Campos obligatorios: Nombre, Presupuesto mensual (numérico)."
+        - "Sirve tanto para crear como para editar una categoría existente."
+    FRONT-06:
+      description: "Vista principal de Movimientos Financieros."
+      acceptance_criteria:
+        - "Lista/Tabla de movimientos con ordenamiento por fecha descendente."
+        - "Paginación funcional."
+        - "Controles de filtro: Tipo (Ingreso/Egreso), Categoría (dropdown), Rango de Fechas."
+        - "Botones de 'Editar' y 'Eliminar' por fila."
+        - "Bloque destacado superior o lateral mostrando el Balance Actual (Ingresos - Egresos)."
+    FRONT-07:
+      description: "Modal/Formulario de Transacciones."
+      acceptance_criteria:
+        - "Campos: Tipo, Valor, Descripción, Fecha, Categoría (dropdown de categorías propias)."
+        - "El dropdown de categorías debe tener un acceso rápido para crear una nueva (abre FRONT-05)."
+        - "Al guardar un EGRESO, si la API responde con la alerta de presupuesto (>80% o >100%), mostrar un Toast/Notificación clara al usuario informando la superación del límite."
+
+  phase_4_pipelines:
+    PIPE-01:
+      description: "Workflow de GitHub Actions (.github/workflows/ci.yml)."
+      acceptance_criteria:
+        - "Se dispara en Pull Requests a main."
+        - "Instala dependencias y ejecuta pytest del backend."
+    PIPE-02:
+      description: "Análisis de calidad con SonarQube (SonarCloud)."
+      acceptance_criteria:
+        - "Paso integrado en el workflow de Actions. Falla si la cobertura o calidad es deficiente."
+    PIPE-03:
+      description: "Análisis de seguridad."
+      acceptance_criteria:
+        - "Uso de Trivy en Actions para escanear dependencias e imagen de Docker."
+
+  phase_5_cloud:
+    CLOUD-01_02_03:
+      description: "Despliegue final de la aplicación."
+      acceptance_criteria:
+        - "Variables de entorno de producción configuradas correctamente en Render y Vercel."
+        - "CORS de FastAPI actualizado para permitir el dominio de Vercel."
+        - "El README.md del repositorio incluye las URLs públicas de acceso."
