@@ -15,6 +15,21 @@ jobs:
     name: Backend Tests & Coverage (PIPE-01)
     runs-on: ubuntu-latest
     
+    services:
+      postgres:
+        image: postgres:15
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: pass
+          POSTGRES_DB: finance_db
+        ports:
+          - 5434:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
@@ -32,6 +47,10 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
           pip install pytest pytest-cov
+
+      - name: Initialize Database
+        run: |
+          PGPASSWORD=pass psql -h localhost -p 5434 -U postgres -d finance_db -f finance-project-db/schema.sql
 
       - name: Run Pytest
         working-directory: finance-project-back
