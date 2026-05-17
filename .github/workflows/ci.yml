@@ -99,8 +99,8 @@ jobs:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         with:
           args: >
-            -Dsonar.projectKey=finance-project-mvp
-            -Dsonar.organization=your-github-org
+            -Dsonar.projectKey=Martin-Cifuentes_finance-project
+            -Dsonar.organization=Martin-Cifuentes
             -Dsonar.python.coverage.reportPaths=finance-project-back/coverage.xml
             -Dsonar.sources=finance-project-back/app,finance-project-front/src
             -Dsonar.tests=finance-project-back/tests
