@@ -21,6 +21,11 @@ class Settings(BaseSettings):
     # Database
     DATABASE_URL: str = "postgresql://postgres:pass@localhost:5434/finance_db"
     
+    # JWT
+    SECRET_KEY: str = "your-super-secret-key-change-in-production"
+    ALGORITHM: str = "HS256"
+    ACCESS_TOKEN_EXPIRE_MINUTES: int = 60 * 24 * 8 # 8 days
+    
     @field_validator("DATABASE_URL", mode="before")
     @classmethod
     def fix_postgres_protocol(cls, v: str) -> str:
