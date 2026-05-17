@@ -5,7 +5,7 @@ CREATE TABLE IF NOT EXISTS users (
     email VARCHAR(255) UNIQUE NOT NULL,
     password_hash TEXT NOT NULL,
     name VARCHAR(255) NOT NULL,
-    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
     deleted_at TIMESTAMP WITH TIME ZONE DEFAULT NULL
 );
 
@@ -25,7 +25,7 @@ CREATE TABLE IF NOT EXISTS transactions (
     value NUMERIC(15, 2) NOT NULL CHECK (value > 0),
     type VARCHAR(10) NOT NULL CHECK (type IN ('ingreso', 'egreso')),
     description TEXT,
-    transaction_date TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+    transaction_date TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
     deleted_at TIMESTAMP WITH TIME ZONE DEFAULT NULL
 );
 
