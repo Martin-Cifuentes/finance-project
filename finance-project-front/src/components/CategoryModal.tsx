@@ -37,7 +37,16 @@ export default function CategoryModal({ isOpen, onClose, onSubmit, editingCat, s
 
   return (
     <div className="fixed inset-0 z-[60] flex items-center justify-center p-4">
-      <div className="absolute inset-0 bg-slate-950/80 backdrop-blur-sm" onClick={onClose}></div>
+      <div 
+        className="absolute inset-0 bg-slate-950/80 backdrop-blur-sm" 
+        onClick={onClose}
+        onKeyDown={(e) => {
+          if (e.key === 'Escape' || e.key === 'Enter') onClose();
+        }}
+        role="button"
+        tabIndex={0}
+        aria-label="Cerrar modal"
+      ></div>
       <div className="relative bg-slate-900 border border-slate-700 w-full max-w-md rounded-3xl shadow-2xl overflow-hidden transform transition-all">
         <div className="p-6">
           <h3 className="text-2xl font-bold text-white mb-6">{editingCat ? 'Editar Categoría' : 'Nueva Categoría'}</h3>
