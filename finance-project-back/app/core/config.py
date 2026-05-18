@@ -7,7 +7,11 @@ class Settings(BaseSettings):
     PROJECT_VERSION: str = "1.0.0"
     
     # CORS
-    BACKEND_CORS_ORIGINS: List[str] = ["http://localhost:3000"]
+    BACKEND_CORS_ORIGINS: List[str] = [
+        "https://finance-project-git-main-martin-cifuentes-projects.vercel.app",
+        "http://localhost:3000",
+        "http://127.0.0.1:3000",
+    ]
     
     @field_validator("BACKEND_CORS_ORIGINS", mode="before")
     @classmethod
