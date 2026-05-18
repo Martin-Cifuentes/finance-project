@@ -84,7 +84,7 @@ Para facilitar la ejecución de este proyecto completo de forma local, se ha pro
 
 ## 11. Limitaciones del MVP y Funcionalidades Pendientes
 Pese a que el proyecto cuenta con todos los aspectos fundamentales para un MVP, se identifican las siguientes limitaciones:
-- No se puede cambiar una categoría con presupuesto a una sin presupuesto.
-- No se puede cambiar el valor de un movimiento al editarlo y la fecha cambia automáticamente a la actual.
+- No se puede cambiar una categoría con presupuesto a una sin presupuesto y tampoco se puede alterar el valor de su presupuesto a menos que se borre y se vuelva a crear.
+- No se muestra la alerta cuando al modificar el valor de un movimiento se superan los porcentajes de presupuestos. Además la fecha cambia automáticamente a la actual.
 - La visualización de movimientos no tiene paginado.
 - No hay filtro por rango de fechas.
