@@ -30,8 +30,8 @@ export default function LoginPage() {
       document.cookie = `token=${data.access_token}; path=/; max-age=604800`;
       router.push('/categories');
       router.refresh();
-    } catch (err: any) {
-      setError(err.message || 'Error al iniciar sesión');
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Error al iniciar sesión');
     } finally {
       setLoading(false);
     }

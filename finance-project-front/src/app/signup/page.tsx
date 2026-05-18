@@ -37,8 +37,8 @@ export default function SignupPage() {
       document.cookie = `token=${loginData.access_token}; path=/; max-age=604800`;
       router.push('/categories');
       router.refresh();
-    } catch (err: any) {
-      setError(err.message || 'Error al registrarse');
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Error al registrarse');
     } finally {
       setLoading(false);
     }

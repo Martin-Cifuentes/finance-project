@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { fetchAPI } from '@/lib/api';
 import CategoryCard from '@/components/CategoryCard';
 import CategoryModal from '@/components/CategoryModal';
@@ -22,11 +22,7 @@ export default function CategoriesPage() {
   const [editingCat, setEditingCat] = useState<Category | null>(null);
   const [saving, setSaving] = useState(false);
 
-  useEffect(() => {
-    loadCategories();
-  }, []);
-
-  const loadCategories = async () => {
+  const loadCategories = useCallback(async () => {
     try {
       setLoading(true);
       const data = await fetchAPI('/categories');
@@ -34,12 +30,16 @@ export default function CategoriesPage() {
         data.map((c: Category) => fetchAPI(`/categories/${c.id}`))
       );
       setCategories(detailedCats);
-    } catch (err: any) {
-      setError('Error al cargar categorías');
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Error al cargar categorías');
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
+
+  useEffect(() => {
+    loadCategories();
+  }, [loadCategories]);
 
   const openModal = (cat?: Category) => {
     if (cat) setEditingCat(cat);
@@ -63,8 +63,8 @@ export default function CategoriesPage() {
       }
       setIsModalOpen(false);
       loadCategories();
-    } catch (err: any) {
-      alert(err.message || 'Error al guardar');
+    } catch (err) {
+      alert(err instanceof Error ? err.message : 'Error al guardar');
     } finally {
       setSaving(false);
     }
@@ -75,8 +75,8 @@ export default function CategoriesPage() {
     try {
       await fetchAPI(`/categories/${id}`, { method: 'DELETE' });
       loadCategories();
-    } catch (err: any) {
-      alert(err.message || 'Error al eliminar');
+    } catch (err) {
+      alert(err instanceof Error ? err.message : 'Error al eliminar');
     }
   };
 

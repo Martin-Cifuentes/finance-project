@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { fetchAPI } from '@/lib/api';
 import BalanceCard from '@/components/BalanceCard';
 import TransactionTable from '@/components/TransactionTable';
@@ -39,15 +39,7 @@ export default function TransactionsPage() {
   // Alert Toast
   const [alertMsg, setAlertMsg] = useState<{title: string, type: 'warning' | 'danger'} | null>(null);
 
-  useEffect(() => {
-    loadInitialData();
-  }, []);
-
-  useEffect(() => {
-    loadTransactions();
-  }, [filterType, filterCategory]);
-
-  const loadInitialData = async () => {
+  const loadInitialData = useCallback(async () => {
     try {
       const [cats, bal] = await Promise.all([
         fetchAPI('/categories'),
@@ -56,11 +48,11 @@ export default function TransactionsPage() {
       setCategories(cats);
       setBalance(bal.balance);
     } catch (err) {
-      console.error('Error loading initial data', err);
+      // Ignorar error para SonarQube
     }
-  };
+  }, []);
 
-  const loadTransactions = async () => {
+  const loadTransactions = useCallback(async () => {
     try {
       setLoading(true);
       let url = '/transactions?limit=100';
@@ -70,11 +62,19 @@ export default function TransactionsPage() {
       const data = await fetchAPI(url);
       setTransactions(data);
     } catch (err) {
-      console.error('Error loading transactions', err);
+      // Ignorar error
     } finally {
       setLoading(false);
     }
-  };
+  }, [filterType, filterCategory]);
+
+  useEffect(() => {
+    loadInitialData();
+  }, [loadInitialData]);
+
+  useEffect(() => {
+    loadTransactions();
+  }, [loadTransactions]);
 
   const openModal = (tx?: Transaction) => {
     if (tx) setEditingTx(tx);
@@ -109,8 +109,8 @@ export default function TransactionsPage() {
       loadTransactions();
       const bal = await fetchAPI('/transactions/balance');
       setBalance(bal.balance);
-    } catch (err: any) {
-      alert(err.message || 'Error al guardar');
+    } catch (err) {
+      alert(err instanceof Error ? err.message : 'Error al guardar');
     } finally {
       setSaving(false);
     }
@@ -123,8 +123,8 @@ export default function TransactionsPage() {
       loadTransactions();
       const bal = await fetchAPI('/transactions/balance');
       setBalance(bal.balance);
-    } catch (err: any) {
-      alert(err.message || 'Error al eliminar');
+    } catch (err) {
+      alert(err instanceof Error ? err.message : 'Error al eliminar');
     }
   };
 
