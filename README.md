@@ -60,7 +60,7 @@ Pipeline configurado en GitHub Actions (`.github/workflows/ci.yml`) que:
 - Ejecuta Trivy para búsqueda de vulnerabilidades y exploits de dependencias de alta severidad.
 
 ## 9. Instrucciones de Despliegue en la Nube y URLs Públicas
-- **Frontend (Vercel)**: [finance-project-cwtswt7cr-martin-cifuentes-projects.vercel.app](https://finance-project-cwtswt7cr-martin-cifuentes-projects.vercel.app/)
+- **Frontend (Vercel)**: [finance-project-cwtswt7cr-martin-cifuentes-projects.vercel.app](https://finance-project-seven-iota.vercel.app/)
 - **Backend (Render)**: [finance-project-213o.onrender.com](https://finance-project-213o.onrender.com/)
 
 ## 10. Guía de Ejecución Local en un Solo Comando
